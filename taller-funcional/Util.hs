@@ -11,6 +11,14 @@ mPLP = AM ['l','p'] tran
                       |q == 2 && s == 'p' = [3]
                       |otherwise = []
 
+mPLPLoop :: MEN Int Char
+mPLPLoop = AM ['l','p'] tran
+           where tran q s |q == 0 && s == 'p' = [1]
+                      |q == 1 && s == 'l' = [2, 3]
+                      |q == 2 && s == 'p' = [3]
+                      |q == 3 && s == 'p' = [3]
+                      |otherwise = []
+
 fix :: (a -> a) -> a
 fix f = f (fix f)
 

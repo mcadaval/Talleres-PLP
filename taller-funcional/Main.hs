@@ -10,8 +10,8 @@ vacio sigma = AM sigma (\q s -> [])
 agregarTransicion :: (Eq a, Eq b) => MEN a b -> a -> b -> a -> MEN a b
 agregarTransicion m q0 s q1 = AM (sigma m) nuevaDelta
     where nuevaDelta x y = if (x == q0 && y == s) 
-                           then q1:(delta m q0 s)
-                           else delta m q0 s
+                           then q1:(delta m x y)
+                           else delta m x y
 
 aislarEstado :: Eq a => MEN a b -> a -> MEN a b
 aislarEstado m q = AM (sigma m) nuevaDelta
@@ -26,24 +26,27 @@ trampaUniversal q ss = AM ss (const $ const [q])
 completo :: (Eq a, Eq b) => MEN a b ->  a  ->  MEN a b
 completo m q = AM (sigma m) nuevaDelta
     where nuevaDelta x y = if elem y (sigma m)
-                           then (filter (/= q) (delta m x y))++[q]
+                           then union (delta m x y) [q]
                            else delta m x y
 
 -- Ejercicio 3
 consumir :: Eq a => MEN a b -> a -> [b] -> [a]
-consumir = undefined
-
+consumir m q0 = foldl (\xs c -> foldr union [] (map (\q -> delta m q c) xs)) [q0]
 
 -- Ejercicio 4
 acepta :: Eq a => MEN a b -> a -> [b] -> [a] -> Bool
-acepta = undefined
+acepta m q0 s qf = foldr (\q b -> b || (elem q qf)) False (consumir m q0 s)
 
 lenguaje :: Eq a => MEN a b -> a ->  [a] -> [[b]]
-lenguaje = undefined
+lenguaje m q0 qf = filter (\s -> acepta m q0 s qf) (kleene (sigma m))
 
 -- Sugerencia (opcional)
 kleene :: [b] -> [[b]]
-kleene = undefined
+kleene sigma = foldNat
+kleene sigma = [palabrasLongN x | x <- [0..] ] 
+    where palabrasLongN n = foldNat [""] (\leng -> map (\w -> map (\c -> c:w) sigma ) leng) n
+-- kleene sigma = foldr (\s leng -> leng++(map (\c -> map (\p -> p++[c]) leng ) s)) [[]] (infinitosX sigma)
+--         where infinitosX x = x:(infinitosX x)
 
 -- Ejercicio 5
 trazas :: MEN a b -> a -> [[b]]

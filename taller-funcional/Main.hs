@@ -37,16 +37,13 @@ consumir m q0 = foldl (\xs c -> foldr union [] (map (\q -> delta m q c) xs)) [q0
 acepta :: Eq a => MEN a b -> a -> [b] -> [a] -> Bool
 acepta m q0 s qf = foldr (\q b -> b || (elem q qf)) False (consumir m q0 s)
 
-lenguaje :: Eq a => MEN a b -> a ->  [a] -> [[b]]
+lenguaje :: Eq a => MEN a b -> a -> [a] -> [[b]]
 lenguaje m q0 qf = filter (\s -> acepta m q0 s qf) (kleene (sigma m))
 
 -- Sugerencia (opcional)
 kleene :: [b] -> [[b]]
-kleene sigma = foldNat
-kleene sigma = [palabrasLongN x | x <- [0..] ] 
-    where palabrasLongN n = foldNat [""] (\leng -> map (\w -> map (\c -> c:w) sigma ) leng) n
--- kleene sigma = foldr (\s leng -> leng++(map (\c -> map (\p -> p++[c]) leng ) s)) [[]] (infinitosX sigma)
---         where infinitosX x = x:(infinitosX x)
+kleene sigma = concat [palabrasLongN x | x <- [0..]] 
+    where palabrasLongN n = foldNat [[]] (\xs -> [ c:x | x <- xs, c <- sigma ]) n
 
 -- Ejercicio 5
 trazas :: MEN a b -> a -> [[b]]

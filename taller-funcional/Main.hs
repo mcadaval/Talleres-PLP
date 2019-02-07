@@ -46,8 +46,10 @@ kleene sigma = concat [palabrasLongN x | x <- [0..]]
     where palabrasLongN n = foldNat [[]] (\xs -> [ c:x | x <- xs, c <- sigma ]) n
 
 -- Ejercicio 5
-trazas :: MEN a b -> a -> [[b]]
-trazas = undefined
+trazas :: Eq a => MEN a b -> a -> [[b]]
+trazas m q0 = foldr (++) [] (takeWhile (\x -> length x /= 0) [ trazasLongN n | n <- [1..] ])
+    where trazasLongN n = filter (\s -> length (consumir m q0 s) /= 0) (palabrasLongN n)
+          palabrasLongN n = foldNat [[]] (\xs -> [ c:x | x <- xs, c <- sigma m ]) n
 
 --Ejercicio 6
 

@@ -1,3 +1,18 @@
+let PolinomioPrototype = {
+    grado: function () {
+        console.log("Implementacion optimizada");
+        return this.gradoMayor();
+    },
+    toString: function () {
+        console.log("Implementacion optimizada");
+        return this.sumatoria1.toString() + " + " + this.sumatoria2.toString();
+    },
+    aPolinomio: function () {
+        console.log("Implementacion optimizada");
+        return this;
+    }
+};
+Object.setPrototypeOf(PolinomioPrototype, Sumatoria.prototype);
 
 function Monomio(coeficiente, grado) {
     this.coeficiente = coeficiente;
@@ -68,10 +83,6 @@ Sumatoria.prototype.grado = function () {
     return n;
 };
 
-Sumatoria.prototype.gradoPolinomio = function () {
-    return this.gradoMayor();
-};
-
 Sumatoria.prototype.toString = function () {
     let grado = this.grado()
     let n = grado;
@@ -91,10 +102,6 @@ Sumatoria.prototype.toString = function () {
     return stringSumatoria;
 }
 
-Sumatoria.prototype.toStringPolinomio = function () {
-    return this.sumatoria1.toStringPolinomio() + " + " + this.sumatoria2.toStringPolinomio();
-}
-
 Sumatoria.prototype.aPolinomio = function () {
     let grado = this.grado()
     let n = grado;
@@ -107,13 +114,10 @@ Sumatoria.prototype.aPolinomio = function () {
             polinomio = new Sumatoria(polinomio, new Monomio(coeficienteDeN, n));
         n--;
     }
+    Object.setPrototypeOf(polinomio, PolinomioPrototype);
     return polinomio;
 }
 
-Sumatoria.prototype.aPolinomioPolinomio = function () {
-   return this;
-}
-
-
 let s1 = new Sumatoria(new Sumatoria(new Monomio(7,2), new Monomio(8,1)), new Sumatoria(new Monomio(-3, 1), new Monomio(4,0)));
 let s2 = new Sumatoria(new Monomio(1, 4), new Sumatoria(new Monomio(-1, 4), new Monomio(1, 3)));
+let s3 = new Sumatoria(s1, s2);

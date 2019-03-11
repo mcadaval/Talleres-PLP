@@ -117,21 +117,26 @@ esParadaDelRecorrido(Recorrido, Calle, Numero) :-
 
 % 8. recorrido(+CalleOrig, +NumOrig, +CalleDest, +NumDest, +Dist,
 %              +CantTrasbordos, -Recorrido)
-recorrido(CalleOrig, NumOrig, CalleDest, NumDest, Dist, CantTrasbordos, Recorrido) :-
-  CantTrasbordos >= 0,
-  paradaCercana(CalleDest, NumDest, Dist, parada(CalleOrig, NumOrig, _)),
-  permutation(Recorrido, []).
+recorrido(CalleOrig, NumOrig, CalleDest, NumDest, Dist, 0, Recorrido) :-
+  paradaCercana(CalleOrig, NumOrig, Dist, parada(CalleParadaOrigen, NumParadaOrigen, LineasCercanasAOrigen)),
+  paradaCercana(CalleDest, NumDest, Dist, parada(CalleParadaDestino, NumParadaDestino, LineasCercanasADestino)),
+  parada(CalleParadaOrigen, NumParadaOrigen, LineasCercanasAOrigen) \= parada(CalleParadaDestino, NumParadaDestino, LineasCercanasADestino),
+  member(Linea, LineasCercanasAOrigen),
+  member(Linea, LineasCercanasADestino),
+  Recorrido = [viaje(Linea, CalleParadaOrigen, NumParadaOrigen, CalleParadaDestino, NumParadaDestino)].
 
 recorrido(CalleOrig, NumOrig, CalleDest, NumDest, Dist, CantTrasbordos, Recorrido) :-
   CantTrasbordos > 0,
-  TrasbordosRestantes is CantTrasbordos - 1,
-  viaje(Linea, CalleOViaje, NumeroOViaje, CalleDViaje, NumeroDViaje),
-  paradaCercana(CalleOrig, NumOrig, Dist, parada(CalleOViaje, NumeroOViaje, LineasParada)),
-  member(Linea, LineasParada),
-  recorrido(CalleDViaje, NumeroDViaje, CalleDest, NumDest, Dist, TrasbordosRestantes, RecorridoRestante),
-  append([viaje(Linea, CalleOViaje, NumeroOViaje, CalleDViaje, NumeroDViaje)], RecorridoRestante, Recorrido),
-  not(pasaPor(RecorridoRestante, CalleOViaje, NumeroOViaje)),
-  not(pasaPor(RecorridoRestante, CalleDViaje, NumeroDViaje)).
+  paradaCercana(CalleOrig, NumOrig, Dist, parada(CalleParadaOrigen, NumParadaOrigen, LineasCercanasAOrigen)),
+  member(Linea, LineasCercanasAOrigen),
+  viaje(Linea, CalleParadaOrigen, NumParadaOrigen, CalleParadaDestinoEsteBondi, NumeroParadaDestinoEsteBondi),
+  UnTrasbordoMenos is CantTrasbordos - 1,
+  recorrido(CalleParadaDestinoEsteBondi, NumeroParadaDestinoEsteBondi, CalleDest, NumDest, Dist, UnTrasbordoMenos, RecorridoRestante),
+  member(viaje(OtraLinea, _, _, _, _), RecorridoRestante),
+  OtraLinea \= Linea,
+  not(pasaPor(RecorridoRestante, CalleParadaOrigen, NumParadaOrigen)),
+  not(pasaPor(RecorridoRestante, CalleParadaDestinoEsteBondi, NumeroParadaDestinoEsteBondi)),
+  append([viaje(Linea, CalleParadaOrigen, NumParadaOrigen, CalleParadaDestinoEsteBondi, NumeroParadaDestinoEsteBondi)], RecorridoRestante, Recorrido).
 
 % ------------------------------------------------------------------------------
 % Predicado auxiliar

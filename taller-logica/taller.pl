@@ -117,7 +117,21 @@ esParadaDelRecorrido(Recorrido, Calle, Numero) :-
 
 % 8. recorrido(+CalleOrig, +NumOrig, +CalleDest, +NumDest, +Dist,
 %              +CantTrasbordos, -Recorrido)
+recorrido(CalleOrig, NumOrig, CalleDest, NumDest, Dist, CantTrasbordos, Recorrido) :-
+  CantTrasbordos >= 0,
+  paradaCercana(CalleDest, NumDest, Dist, parada(CalleOrig, NumOrig, _)),
+  permutation(Recorrido, []).
 
+recorrido(CalleOrig, NumOrig, CalleDest, NumDest, Dist, CantTrasbordos, Recorrido) :-
+  CantTrasbordos > 0,
+  TrasbordosRestantes is CantTrasbordos - 1,
+  viaje(Linea, CalleOViaje, NumeroOViaje, CalleDViaje, NumeroDViaje),
+  paradaCercana(CalleOrig, NumOrig, Dist, parada(CalleOViaje, NumeroOViaje, LineasParada)),
+  member(Linea, LineasParada),
+  recorrido(CalleDViaje, NumeroDViaje, CalleDest, NumDest, Dist, TrasbordosRestantes, RecorridoRestante),
+  append([viaje(Linea, CalleOViaje, NumeroOViaje, CalleDViaje, NumeroDViaje)], RecorridoRestante, Recorrido),
+  not(pasaPor(RecorridoRestante, CalleOViaje, NumeroOViaje)),
+  not(pasaPor(RecorridoRestante, CalleDViaje, NumeroDViaje)).
 
 % ------------------------------------------------------------------------------
 % Predicado auxiliar

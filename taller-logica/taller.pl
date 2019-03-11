@@ -91,7 +91,29 @@ paradaCercanaEnMismaCalle(Calle, Numero, Distancia, Parada) :-
   Parada = parada(Calle, NumeroParadaCercana, Lineas).
 
 % 7. pasaPor(+Recorrido, ?Calle, ?Numero)
+pasaPor(Recorrido, Calle, Numero) :-
+  esParadaDelRecorrido(Recorrido, Calle, Numero).
 
+pasaPor(Recorrido, Calle, Numero) :-
+  member(viaje(Linea, Calle, NumO, Calle, NumD), Recorrido),
+  parada(Calle, NumO, LineasQueParanEnNumO),
+  member(Linea, LineasQueParanEnNumO),
+  parada(Calle, NumD, LineasQueParanEnNumD),
+  member(Linea, LineasQueParanEnNumD),
+  between(NumO, NumD, Numero).
+
+% esParadaDelRecorrido(+Recorrido, ?Calle, ?Numero)
+esParadaDelRecorrido(Recorrido, Calle, Numero) :-
+  member(viaje(Linea, Calle, Numero, OtraCalle, _), Recorrido),
+  OtraCalle \= Calle,
+  parada(Calle, Numero, LineasQueParanEnCalleYNumero),
+  member(Linea, LineasQueParanEnCalleYNumero).
+
+esParadaDelRecorrido(Recorrido, Calle, Numero) :-
+  member(viaje(Linea, OtraCalle, _, Calle, Numero), Recorrido),
+  OtraCalle \= Calle,
+  parada(Calle, Numero, LineasQueParanEnCalleYNumero),
+  member(Linea, LineasQueParanEnCalleYNumero).
 
 % 8. recorrido(+CalleOrig, +NumOrig, +CalleDest, +NumDest, +Dist,
 %              +CantTrasbordos, -Recorrido)
